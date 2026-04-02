@@ -45,6 +45,14 @@ export default function Login() {
       padding: 'var(--space-2xl) var(--space-lg)'
     }}>
       <div className="card-glass" style={{ width: '100%', maxWidth: '440px' }}>
+        <button 
+          onClick={() => navigate('/')} 
+          className="btn btn-ghost btn-sm text-secondary"
+          style={{ marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: 0, fontWeight: 500 }}
+        >
+          <span style={{ fontSize: '1.2rem' }}>←</span> Back to Home
+        </button>
+
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
           <h2 style={{ marginBottom: 'var(--space-xs)' }}>
             {isRegister ? 'Create Account' : 'Welcome Back'}

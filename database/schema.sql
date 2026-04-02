@@ -1,7 +1,3 @@
--- Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS digital_heroes;
-USE digital_heroes;
-
 -- Drop tables if they exist to start fresh (for dev)
 DROP TABLE IF EXISTS scores;
 DROP TABLE IF EXISTS draws;
