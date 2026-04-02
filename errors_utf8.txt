@@ -1,0 +1,13 @@
+src/lib/AppContext.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/lib/AppContext.tsx(1,67): error TS1484: 'ReactNode' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/AppContext.tsx(2,10): error TS1484: 'UserProfile' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/AppContext.tsx(2,23): error TS1484: 'Score' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/AppContext.tsx(2,30): error TS1484: 'Charity' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/AppContext.tsx(2,39): error TS1484: 'Draw' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/mockData.ts(1,10): error TS1484: 'UserProfile' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/mockData.ts(1,23): error TS1484: 'Score' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/mockData.ts(1,30): error TS1484: 'Charity' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/mockData.ts(1,39): error TS1484: 'Draw' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/Dashboard.tsx(2,1): error TS6192: All imports in import declaration are unused.
+src/pages/Draws.tsx(6,26): error TS6133: 'user' is declared but its value is never read.
+src/pages/Scores.tsx(3,16): error TS6133: 'Trash2' is declared but its value is never read.
