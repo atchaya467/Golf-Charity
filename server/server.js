@@ -9,7 +9,13 @@ import drawRoutes from './routes/draws.js';
 import userRoutes from './routes/users.js';
 import { verifyToken } from './middleware/auth.js';
 
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -51,8 +57,15 @@ app.get('/api/me', verifyToken, async (req, res) => {
 
 // Start server only if not in a serverless environment (like Vercel)
 if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`\n🚀 Golf Charity API running on http://localhost:${PORT}\n`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n❌ ERROR: Port ${PORT} is already in use. Please stop the existing process and try again.\n`);
+    } else {
+      console.error('\n❌ Server error:', err);
+    }
+    process.exit(1);
   });
 }
 
