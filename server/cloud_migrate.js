@@ -1,64 +1,42 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pool from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load carefully from .env.production
-dotenv.config({ path: path.join(__dirname, '../.env.production') });
-
 async function migrate() {
-  console.log('\n--- ☁️ Aiven Cloud Migration ---\n');
+  console.log('🚀 Starting Cloud Database Migration...');
   
-  const config = {
-    host:     process.env.DB_HOST,
-    user:     process.env.DB_USER     || 'avnadmin',
-    password: process.env.DB_PASSWORD || process.env.DB_PASS,
-    database: process.env.DB_NAME     || 'defaultdb',
-    port:     process.env.DB_PORT     || 25060,
-    ssl:      { rejectUnauthorized: false } // Required for Aiven
-  };
-
-  if (!config.host || !config.password) {
-    console.error('❌ ERROR: Aiven details are missing in .env.production!');
-    console.log('Please fill in DB_HOST and DB_PASS first.');
-    process.exit(1);
-  }
-
-  console.log('Connecting to:', config.host);
-
   try {
-    const connection = await mysql.createConnection(config);
-    console.log('✅ Connected to Aiven MySQL!');
-
     const schemaPath = path.join(__dirname, '../database/schema.sql');
-    const sql = fs.readFileSync(schemaPath, 'utf8');
-    
-    // Split by semicolon but ignore ones inside strings
-    const statements = sql
-      .split(/;(?=(?:[^']*'[^']*')*[^']*$)/)
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+    const schemaSql = fs.readFileSync(schemaPath, 'utf8');
 
-    console.log(`🚀 Running ${statements.length} SQL statements...`);
+    // Split by semicolon, but filter out empty strings and comments
+    const queries = schemaSql
+      .split(';')
+      .map(q => q.trim())
+      .filter(q => q.length > 0 && !q.startsWith('--'));
 
-    for (const statement of statements) {
-      await connection.query(statement);
+    console.log(`\nFound ${queries.length} queries to execute.`);
+
+    for (let i = 0; i < queries.length; i++) {
+      const query = queries[i];
+      const snippet = query.substring(0, 50).replace(/\n/g, ' ') + '...';
+      console.log(`[${i + 1}/${queries.length}] Executing: ${snippet}`);
+      
+      await pool.query(query);
     }
 
-    console.log('\n🌟 SUCCESS! Your Aiven Database is now BUILT and ready.');
-    console.log('You can now click "Deploy" in Vercel.');
-
-    await connection.end();
+    console.log('\n✅ Migration successful! All tables and seed data created.');
   } catch (err) {
-    console.error('\n❌ MIGRATION FAILED!');
+    console.error('\n❌ Migration failed!');
     console.error('Error:', err.message);
-    console.log('\n💡 Tip: Make sure your Aiven "IP Filter" is set to 0.0.0.0/0');
+    if (err.sql) console.error('Last attempted SQL:', err.sql.substring(0, 100));
+  } finally {
+    process.exit(0);
   }
-  console.log('\n-----------------------------------\n');
 }
 
 migrate();
