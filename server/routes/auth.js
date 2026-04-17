@@ -37,6 +37,10 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ token, user });
   } catch (_err) {
     console.error('FULL Register error:', _err);
+    // Log specific details if needed for internal debugging
+    if (_err.code === 'ER_BAD_DB_ERROR') {
+      console.error('Database connection issue detected during registration.');
+    }
     res.status(500).json({ error: _err.message || 'Server error during registration.' });
   }
 });

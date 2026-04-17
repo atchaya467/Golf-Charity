@@ -107,10 +107,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await apiLogin(email, password);
       await loadData();
       return true;
-    } catch (_err) {
+    } catch (_err: any) {
       console.error(_err);
       setState(prev => ({ ...prev, isLoading: false }));
-      return false;
+      throw _err; // Propagate error message to UI
     }
   }, [loadData]);
 
@@ -120,10 +120,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await apiRegister(email, password);
       await loadData();
       return true;
-    } catch (_err) {
+    } catch (_err: any) {
       console.error(_err);
       setState(prev => ({ ...prev, isLoading: false }));
-      return false;
+      throw _err; // Propagate error message to UI
     }
   }, [loadData]);
 

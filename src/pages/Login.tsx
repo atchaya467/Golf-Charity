@@ -28,11 +28,9 @@ export default function Login() {
 
       if (success) {
         navigate('/dashboard');
-      } else {
-        setError(isRegister ? 'Registration failed. Try a different email.' : 'Login failed. Please check your credentials.');
       }
-    } catch {
-      setError('An error occurred. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
