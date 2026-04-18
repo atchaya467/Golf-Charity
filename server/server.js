@@ -1,14 +1,4 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-
-import authRoutes from './routes/auth.js';
-import scoreRoutes from './routes/scores.js';
-import charityRoutes from './routes/charities.js';
-import drawRoutes from './routes/draws.js';
-import userRoutes from './routes/users.js';
-import { verifyToken } from './middleware/auth.js';
-
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,6 +6,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
+
+import express from 'express';
+import cors from 'cors';
+
+import authRoutes from './routes/auth.js';
+import scoreRoutes from './routes/scores.js';
+import charityRoutes from './routes/charities.js';
+import drawRoutes from './routes/draws.js';
+import userRoutes from './routes/users.js';
+import { verifyToken } from './middleware/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;

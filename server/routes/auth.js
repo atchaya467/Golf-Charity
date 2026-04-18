@@ -70,7 +70,10 @@ router.post('/login', async (req, res) => {
     res.json({ token, user: safeUser });
   } catch (_err) {
     console.error('Login error:', _err);
-    res.status(500).json({ error: 'Server error during login.' });
+    res.status(500).json({ 
+      error: 'Server error during login.',
+      details: process.env.NODE_ENV === 'development' ? _err.message : undefined 
+    });
   }
 });
 
