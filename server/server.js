@@ -15,6 +15,8 @@ import scoreRoutes from './routes/scores.js';
 import charityRoutes from './routes/charities.js';
 import drawRoutes from './routes/draws.js';
 import userRoutes from './routes/users.js';
+import eventRoutes from './routes/events.js';
+import donationRoutes from './routes/donations.js';
 import { verifyToken } from './middleware/auth.js';
 
 const app = express();
@@ -36,7 +38,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/scores', verifyToken, scoreRoutes);
 app.use('/api/charities', verifyToken, charityRoutes);
 app.use('/api/draws', verifyToken, drawRoutes);
-app.use('/api/users', userRoutes); // Internally uses verifyToken/verifyAdmin
+app.use('/api/users', userRoutes); 
+app.use('/api/events', eventRoutes);
+app.use('/api/donations', donationRoutes);
 
 // Protected: get current user profile
 app.get('/api/me', verifyToken, async (req, res) => {

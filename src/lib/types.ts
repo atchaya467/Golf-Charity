@@ -10,13 +10,6 @@ export interface UserProfile {
   created_at: string;
 }
 
-export interface Score {
-  id: string;
-  user_id: string;
-  score_value: number;
-  date_created: string;
-}
-
 export interface Charity {
   id: string;
   name: string;
@@ -25,10 +18,25 @@ export interface Charity {
   active_status: boolean;
 }
 
-export interface Draw {
+export interface Event {
   id: string;
-  draw_date: string;
-  winning_numbers: number[];
-  prize_pool_total: number;
-  is_published: boolean;
+  title: string;
+  description: string;
+  location: string;
+  event_date: string;
+  price: number;
+  capacity: number;
+  image_url: string | null;
+  created_at: string;
+}
+
+export interface Donation {
+  id: string;
+  user_id: string | null;
+  charity_id: string | null;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed';
+  stripe_id: string | null;
+  created_at: string;
 }

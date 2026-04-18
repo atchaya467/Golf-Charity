@@ -1,0 +1,28 @@
+--- PROJECT TECH STACK & CLOUD SUMMARY ---
+
+1. CLOUD SERVICES USED:
+-----------------------
+- AIVEN (MySQL Database):
+   Purpose: Stores all user credentials, charity details, scores, and draw data. It ensures data is persistent and accessible from the cloud.
+   
+- VERCEL (Hosting & Serverless):
+   Purpose: Hosts the frontend React application and runs the backend Node.js Express API. It provides a public URL for users to access the project.
+   
+- GITHUB (Source Control):
+   Purpose: Stores the project source code and connects it to Vercel for continuous deployment.
+
+2. PROJECT PURPOSE:
+-------------------
+The Digital Heroes "Golf Charity" platform is a philanthropic web application.
+- Goal: Raise funds for charities through a gamified golf-draw system.
+- Key Features:
+   - Secure user authentication (JWT/Bcrypt).
+   - Selection of specific charities (Swings for Hope, Green Horizons, etc.).
+   - Tracking and distribution of prize pools based on "scores" and "draws".
+
+3. TECHNOLOGY STACK:
+--------------------
+- Frontend: React 19, Vite, TypeScript, Framer Motion, Lucide-React.
+- Backend: Node.js, Express.js.
+- Database: MySQL (mysql2 client).
+- Security: JSON Web Tokens (JWT).

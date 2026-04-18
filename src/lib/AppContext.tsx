@@ -1,27 +1,25 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { UserProfile, Score, Charity, Draw } from './types';
+import type { UserProfile, Charity } from './types';
 import { 
   apiLogin, 
   apiRegister, 
   apiLogout, 
   isLoggedIn as checkIsLoggedIn, 
   apiGetMe, 
-  apiGetScores, 
-  apiAddScore, 
-  apiGetCharities, 
-  apiSelectCharity, 
-  apiGetDraws, 
-  apiSimulateDraw,
+  apiGetEvents,
+  apiGetImpact,
+  apiDonate,
+  apiRegisterEvent,
   apiGetAllUsers
 } from './api';
 
 interface AppState {
   user: UserProfile | null;
-  scores: Score[];
+  events: any[];
+  impact: any;
   charities: Charity[];
-  draws: Draw[];
-  allUsers: UserProfile[]; // Keep as empty for now or fetch later
+  allUsers: UserProfile[];
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -30,12 +28,9 @@ interface AppContextType extends AppState {
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  addScore: (value: number) => Promise<void>;
-  selectCharity: (charityId: string, percent: number) => Promise<void>;
-  updateDraw: (draw: Draw) => void;
-  runDrawSimulation: (pool: number) => Promise<void>;
-  addCharity: (charity: Omit<Charity, 'id'>) => Promise<void>;
-  deleteCharity: (id: string) => Promise<void>;
+  donate: (amount: number, charityId?: string) => Promise<void>;
+  registerForEvent: (eventId: string) => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -43,9 +38,9 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>({
     user: null,
-    scores: [],
+    events: [],
+    impact: null,
     charities: [],
-    draws: [],
     allUsers: [],
     isAuthenticated: checkIsLoggedIn(),
     isLoading: true,
@@ -53,47 +48,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const loadData = useCallback(async () => {
     try {
-      if (checkIsLoggedIn()) {
-        const [me, scoresData, charitiesData, drawsData] = await Promise.all([
-          apiGetMe(),
-          apiGetScores(),
-          apiGetCharities(),
-          apiGetDraws()
-        ]);
+      const [eventsData, impactData] = await Promise.all([
+        apiGetEvents(),
+        apiGetImpact()
+      ]);
 
-        let usersData: UserProfile[] = [];
-        if (me.is_admin) {
+      let me = null;
+      let usersData: UserProfile[] = [];
+      
+      if (checkIsLoggedIn()) {
+        me = await apiGetMe();
+        if (me?.is_admin) {
           try {
             usersData = await apiGetAllUsers();
           } catch (err) {
-            console.error('Failed to load admin users data', err);
+            console.error('Admin users load failed', err);
           }
         }
-
-        setState(prev => ({
-          ...prev,
-          user: me,
-          scores: scoresData,
-          charities: charitiesData,
-          draws: drawsData,
-          allUsers: usersData,
-          isAuthenticated: true,
-          isLoading: false
-        }));
-      } else {
-        const charitiesData = await apiGetCharities().catch(() => []);
-        const drawsData = await apiGetDraws().catch(() => []);
-        setState(prev => ({ 
-          ...prev, 
-          charities: charitiesData, 
-          draws: drawsData,
-          isLoading: false 
-        }));
       }
+
+      setState(prev => ({
+        ...prev,
+        user: me,
+        events: eventsData,
+        impact: impactData,
+        allUsers: usersData,
+        isAuthenticated: !!me,
+        isLoading: false
+      }));
     } catch (_err) {
-      console.error("Failed to load initial data", _err);
-      apiLogout();
-      setState(prev => ({ ...prev, isAuthenticated: false, isLoading: false }));
+      console.error("Failed to load data", _err);
+      setState(prev => ({ ...prev, isLoading: false }));
     }
   }, []);
 
@@ -107,10 +92,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await apiLogin(email, password);
       await loadData();
       return true;
-    } catch (_err: any) {
-      console.error(_err);
+    } catch (err) {
+      const error = err as Error;
       setState(prev => ({ ...prev, isLoading: false }));
-      throw _err; // Propagate error message to UI
+      throw error;
     }
   }, [loadData]);
 
@@ -120,10 +105,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await apiRegister(email, password);
       await loadData();
       return true;
-    } catch (_err: any) {
-      console.error(_err);
+    } catch (err) {
+      const error = err as Error;
       setState(prev => ({ ...prev, isLoading: false }));
-      throw _err; // Propagate error message to UI
+      throw error;
     }
   }, [loadData]);
 
@@ -132,57 +117,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState(prev => ({
       ...prev,
       user: null,
-      scores: [],
       isAuthenticated: false,
     }));
   }, []);
 
-  const addScore = useCallback(async (value: number) => {
+  const donate = useCallback(async (amount: number, charityId?: string) => {
     try {
-      const newScores = await apiAddScore(value);
-      setState(prev => ({ ...prev, scores: newScores }));
+      await apiDonate(amount, charityId, state.user?.id);
+      await loadData(); // Refresh impact
     } catch (_err) {
       console.error(_err);
-      alert('Failed to add score.');
+      throw _err;
     }
-  }, []);
+  }, [state.user?.id, loadData]);
 
-  const selectCharity = useCallback(async (charityId: string, percent: number) => {
+  const registerForEvent = useCallback(async (eventId: string) => {
     try {
-      const updatedUser = await apiSelectCharity(charityId, percent);
-      setState(prev => ({ ...prev, user: updatedUser }));
+      await apiRegisterEvent(eventId);
+      await loadData();
     } catch (_err) {
       console.error(_err);
-      alert('Failed to update charity.');
+      throw _err;
     }
-  }, []);
-
-  const updateDraw = useCallback((draw: Draw) => {
-    setState(prev => ({
-      ...prev,
-      draws: prev.draws.map(d => (d.id === draw.id ? draw : d)),
-    }));
-  }, []);
-
-  const runDrawSimulation = useCallback(async (pool: number) => {
-    try {
-      const newDraw = await apiSimulateDraw(pool);
-      setState(prev => ({ ...prev, draws: [newDraw, ...prev.draws] }));
-    } catch (_err) {
-      console.error(_err);
-      alert('Failed to simulate draw.');
-    }
-  }, []);
-
-  const addCharity = useCallback(async (charity: Omit<Charity, 'id'>) => {
-    // Note: Backend endpoint for adding charities not yet fully implemented, but stubbing frontend
-    console.log('Adding charity:', charity);
-    await loadData();
-  }, [loadData]);
-
-  const deleteCharity = useCallback(async (id: string) => {
-    console.log('Deleting charity:', id);
-    await loadData();
   }, [loadData]);
 
   return (
@@ -192,12 +148,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
-        addScore,
-        selectCharity,
-        updateDraw,
-        runDrawSimulation,
-        addCharity,
-        deleteCharity
+        donate,
+        registerForEvent,
+        refreshData: loadData
       }}
     >
       {children}

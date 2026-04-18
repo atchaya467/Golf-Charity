@@ -29,8 +29,9 @@ export default function Login() {
       if (success) {
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred. Please try again.');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }

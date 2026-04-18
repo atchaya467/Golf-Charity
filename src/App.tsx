@@ -2,14 +2,18 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import { useAppContext } from './lib/AppContext';
 
-// Placeholder Pages (will be replaced by actual components)
+// Core Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Scores from './pages/Scores';
-import Charities from './pages/Charities';
-import Draws from './pages/Draws';
 import Admin from './pages/Admin';
+import About from './pages/About';
+import Transparency from './pages/Transparency';
+import Contact from './pages/Contact';
+import Events from './pages/Events';
+import Donate from './pages/Donate';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 
 function App() {
   const { isAuthenticated, user } = useAppContext();
@@ -21,23 +25,18 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/transparency" element={<Transparency />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
           
           {/* Protected Routes */}
           <Route 
             path="/dashboard" 
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/scores" 
-            element={isAuthenticated ? <Scores /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/charities" 
-            element={isAuthenticated ? <Charities /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/draws" 
-            element={isAuthenticated ? <Draws /> : <Navigate to="/login" />} 
           />
           
           {/* Admin Route */}

@@ -59,51 +59,34 @@ export async function apiGetMe() {
   return handleResponse(res);
 }
 
-// ── Scores ──
+// ── Events ──
 
-export async function apiGetScores() {
-  const res = await fetch(`${API_BASE}/scores`, { headers: authHeaders() });
+export async function apiGetEvents() {
+  const res = await fetch(`${API_BASE}/events`);
   return handleResponse(res);
 }
 
-export async function apiAddScore(score_value: number) {
-  const res = await fetch(`${API_BASE}/scores`, {
+export async function apiRegisterEvent(event_id: string) {
+  const res = await fetch(`${API_BASE}/events/${event_id}/register`, {
     method: 'POST',
     headers: authHeaders(),
-    body: JSON.stringify({ score_value }),
   });
   return handleResponse(res);
 }
 
-// ── Charities ──
+// ── Donations ──
 
-export async function apiGetCharities() {
-  const res = await fetch(`${API_BASE}/charities`, { headers: authHeaders() });
-  return handleResponse(res);
-}
-
-export async function apiSelectCharity(charity_id: string, charity_percent: number) {
-  const res = await fetch(`${API_BASE}/charities/select`, {
-    method: 'PUT',
-    headers: authHeaders(),
-    body: JSON.stringify({ charity_id, charity_percent }),
-  });
-  return handleResponse(res);
-}
-
-// ── Draws ──
-
-export async function apiGetDraws() {
-  const res = await fetch(`${API_BASE}/draws`, { headers: authHeaders() });
-  return handleResponse(res);
-}
-
-export async function apiSimulateDraw(prize_pool_total: number) {
-  const res = await fetch(`${API_BASE}/draws/simulate`, {
+export async function apiDonate(amount: number, charity_id?: string, user_id?: string) {
+  const res = await fetch(`${API_BASE}/donations`, {
     method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ prize_pool_total }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount, charity_id, user_id }),
   });
+  return handleResponse(res);
+}
+
+export async function apiGetImpact() {
+  const res = await fetch(`${API_BASE}/donations/impact`);
   return handleResponse(res);
 }
 

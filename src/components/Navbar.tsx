@@ -20,39 +20,41 @@ export default function Navbar() {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navLinks = isAuthenticated
-    ? [
-        { path: '/dashboard', label: 'Dashboard' },
-        { path: '/scores', label: 'Scores' },
-        { path: '/charities', label: 'Charities' },
-        { path: '/draws', label: 'Draws' },
-        ...(user?.is_admin ? [{ path: '/admin', label: 'Admin' }] : []),
-      ]
-    : [];
+  const navLinks = [
+    { path: '/about', label: 'About' },
+    { path: '/events', label: 'Events' },
+    { path: '/transparency', label: 'Transparency' },
+    { path: '/contact', label: 'Contact' },
+    ...(isAuthenticated ? [
+      { path: '/dashboard', label: 'Dashboard' },
+      { path: '/donate', label: 'Donate' },
+      ...(user?.is_admin ? [{ path: '/admin', label: 'Admin' }] : []),
+    ] : [
+      { path: '/donate', label: 'Donate' },
+    ]),
+  ];
 
   return (
     <>
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar-inner">
           <Link to="/" className="navbar-brand">
-            <div className="navbar-brand-icon">GC</div>
-            <span>Golf <span className="text-gold">Charity</span></span>
+            <div className="navbar-brand-icon">FF</div>
+            <span>Fairway <span className="text-gold">Futures</span></span>
           </Link>
 
-          {isAuthenticated && (
-            <div className="navbar-links">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`navbar-link ${isActive(link.path) ? 'active' : ''}`}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          )}
+          <div className="navbar-links">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`navbar-link ${isActive(link.path) ? 'active' : ''}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
           <div className="navbar-actions">
             {isAuthenticated ? (
@@ -88,23 +90,23 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile menu */}
-      {isAuthenticated && (
-        <div className={`navbar-mobile-menu ${mobileOpen ? 'open' : ''}`}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`navbar-link ${isActive(link.path) ? 'active' : ''}`}
-              onClick={() => setMobileOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
+      <div className={`navbar-mobile-menu ${mobileOpen ? 'open' : ''}`}>
+        {navLinks.map((link) => (
+          <Link
+            key={link.path}
+            to={link.path}
+            className={`navbar-link ${isActive(link.path) ? 'active' : ''}`}
+            onClick={() => setMobileOpen(false)}
+          >
+            {link.label}
+          </Link>
+        ))}
+        {isAuthenticated && (
           <button className="navbar-link" onClick={logout} style={{ textAlign: 'left' }}>
             Sign Out
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 }
