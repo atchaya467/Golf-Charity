@@ -44,15 +44,31 @@ app.use('/api/donations', donationRoutes);
 
 // Protected: get current user profile
 app.get('/api/me', verifyToken, async (req, res) => {
-  // Delegate to auth route handler — imported inline
   const { default: pool } = await import('./db.js');
   try {
-    const [rows] = await pool.query(
-      'SELECT id, email, subscription_status, charity_id, charity_percent, is_admin, created_at FROM users WHERE id = ?',
-      [req.user.id]
-    );
+    const [rows] = await pool.query(`
+      SELECT 
+        id, email, subscription_status, charity_id, charity_percent, is_admin, created_at,
+        (SELECT COALESCE(SUM(amount), 0) FROM donations WHERE user_id = users.id AND status = 'completed') as total_donated,
+        (SELECT COUNT(*) FROM registrations WHERE user_id = users.id AND payment_status = 'completed') as events_joined
+      FROM users 
+      WHERE id = ?
+    `, [req.user.id]);
+    
     if (rows.length === 0) return res.status(404).json({ error: 'User not found.' });
-    res.json(rows[0]);
+    
+    const user = rows[0];
+    // Calculate impact score: 1pt per $10 donated + 10pts per event joined
+    const impact_score = Math.floor((Number(user.total_donated) / 10) + (user.events_joined * 10));
+    
+    res.json({
+      ...user,
+      stats: {
+        total_donated: Number(user.total_donated),
+        events_joined: user.events_joined,
+        impact_score
+      }
+    });
   } catch (err) {
     console.error('Me error:', err);
     res.status(500).json({ error: 'Server error.' });

@@ -8,6 +8,11 @@ export interface UserProfile {
   charity_percent: number;
   is_admin: boolean;
   created_at: string;
+  stats?: {
+    total_donated: number;
+    events_joined: number;
+    impact_score: number;
+  };
 }
 
 export interface Charity {

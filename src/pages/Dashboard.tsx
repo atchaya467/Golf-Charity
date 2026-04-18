@@ -4,11 +4,13 @@ import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user } = useAppContext();
+  const stats = user?.stats || { total_donated: 0, events_joined: 0, impact_score: 0 };
   
-  // Mock data for impact — in a real app these would come from the API
-  const totalDonated = 525.00;
-  const eventsRegistered = 2;
-  const impactScore = 85;
+  const statCards = [
+    { label: 'Total Donated', value: `$${stats.total_donated.toLocaleString()}`, sub: 'Lifetime contribution', icon: <Wallet size={22} />, color: 'var(--accent-emerald)' },
+    { label: 'Events Joined', value: stats.events_joined, sub: 'Upcoming tournaments', icon: <Calendar size={22} />, color: 'var(--accent-blue)' },
+    { label: 'Impact Score', value: stats.impact_score, sub: 'Performance metric', icon: <Heart size={22} />, color: 'var(--accent-gold)' },
+  ];
 
   return (
     <div className="container animate-fade-in" style={{ padding: 'var(--space-2xl) var(--space-lg)' }}>
@@ -25,11 +27,7 @@ export default function Dashboard() {
 
       {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
-        {[
-          { label: 'Total Donated', value: `$${totalDonated}`, sub: 'Lifetime contribution', icon: <Wallet size={22} />, color: 'var(--accent-emerald)' },
-          { label: 'Events Joined', value: eventsRegistered, sub: 'Upcoming tournaments', icon: <Calendar size={22} />, color: 'var(--accent-blue)' },
-          { label: 'Impact Score', value: impactScore, sub: 'Top 10% of donors', icon: <Heart size={22} />, color: 'var(--accent-gold)' },
-        ].map((stat) => (
+        {statCards.map((stat) => (
           <div className="card" key={stat.label} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <div style={{ padding: '8px', width: 'fit-content', background: `color-mix(in srgb, ${stat.color} 15%, transparent)`, borderRadius: 'var(--radius-md)', color: stat.color }}>
               {stat.icon}
