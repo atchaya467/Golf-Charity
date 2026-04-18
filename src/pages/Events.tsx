@@ -44,12 +44,6 @@ export default function Events() {
 
       <section style={{ padding: 'var(--space-3xl) 0' }}>
         <div className="container">
-          {error && (
-            <div className="badge badge-rose" style={{ padding: 'var(--space-md)', width: '100%', marginBottom: 'var(--space-xl)' }}>
-              {error}
-            </div>
-          )}
-
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: 'var(--space-xl)' }}>
             {events.map((event) => (
               <div key={event.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
