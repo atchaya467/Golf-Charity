@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Send, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Facebook, Globe, MessageSquare } from 'lucide-react';
 
 export default function Contact() {
   return (
