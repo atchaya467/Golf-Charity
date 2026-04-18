@@ -13,11 +13,17 @@ async function migrate() {
     const schemaPath = path.join(__dirname, '../database/schema.sql');
     const schemaSql = fs.readFileSync(schemaPath, 'utf8');
 
-    // Split by semicolon, but filter out empty strings and comments
+    // Split by semicolon, but filter out empty strings and properly handle comments
     const queries = schemaSql
       .split(';')
-      .map(q => q.trim())
-      .filter(q => q.length > 0 && !q.startsWith('--'));
+      .map(q => {
+        // Remove SQL comments (lines starting with --)
+        return q.split('\n')
+          .filter(line => !line.trim().startsWith('--'))
+          .join('\n')
+          .trim();
+      })
+      .filter(q => q.length > 0);
 
     console.log(`\nFound ${queries.length} queries to execute.`);
 
