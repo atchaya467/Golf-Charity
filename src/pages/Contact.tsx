@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Send, Facebook, Globe, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 export default function Contact() {
   return (
@@ -53,8 +53,8 @@ export default function Contact() {
               <div>
                 <h3 style={{ marginBottom: 'var(--space-md)' }}>Connect With Us</h3>
                 <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
-                  {[Instagram, Twitter, Linkedin].map((Icon, i) => (
-                    <a key={i} href="#" className="btn btn-secondary btn-sm" style={{ width: '40px', height: '40px', padding: 0 }}>
+                  {[Mail, Phone, MapPin].map((Icon, i) => (
+                    <a key={i} href="#" className="btn btn-secondary btn-sm" style={{ width: '40px', height: '40px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Icon size={20} />
                     </a>
                   ))}
